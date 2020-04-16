@@ -4,7 +4,7 @@ password = '3poli=TEX'
 databaseName = 'localhost/xe'
 connection = cx_Oracle.connect(username,password, databaseName)
 cursor = connection.cursor()
-# test request for connection with db
+# ---------------test request for connection with db---------------
 query = 'SELECT \'Hello from Oracle!\' FROM DUAL'
 print(query)
 cursor.execute(query)
