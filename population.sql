@@ -13,6 +13,7 @@ INSERT INTO full_city_address(city_name, city_state) VALUES ('Los Angeles','Cali
 
 --city_info population
 INSERT INTO city_info(city_name,city_state,stat_year,city_gdp,city_rating) VALUES ('Autauga','Alabama',2015,102031,40);
+INSERT INTO city_info(city_name,city_state,stat_year,city_gdp,city_rating) VALUES ('Autauga','Alabama',2016,102031,43);
 INSERT INTO city_info(city_name,city_state,stat_year,city_gdp,city_rating) VALUES ('Baldwin','Alabama',2015,10232134,50);
 INSERT INTO city_info(city_name,city_state,stat_year,city_gdp,city_rating) VALUES ('Bethel Census Area','Alaska',2016,1021,3);
 INSERT INTO city_info(city_name,city_state,stat_year,city_gdp,city_rating) VALUES ('Los Angeles', 'California',2015,23041,42);
