@@ -13,9 +13,13 @@ connection = cx_Oracle.connect(username,password, databaseName)
 cursor = connection.cursor()
 
 def fileId_from_url(url):
-    """Return fileId from a url."""
-    raw_fileId = re.findall("~[A-z.]+/[0-9]+", url)[0][1:]
-    return raw_fileId.replace('/', ':')
+    url_raw = url.split('/')
+    cleared = [s.strip('~') for s in url_raw] # remove the ~
+    nickname = cleared[3]
+    id = cleared[4]
+    fileId = nickname + ':' + id
+    return fileId
+
 
 # query 1 ------------------------------------------------------
 query_1 = '''SELECT
@@ -102,19 +106,19 @@ graph_3_id = fileId_from_url(graph_3)
 box_1 = {
     'type': 'box',
     'boxType': 'plot',
-    'fileId': 'viplash4:21', #this is kastil but without it it doesnt work :(
+    'fileId': graph_1_id,
     'title': 'Внутрішній валовий продукт США за 2015 рік'
 }
 box_2 = {
     'type': 'box',
     'boxType': 'plot',
-    'fileId': 'viplash4:23', #this is kastil but without it it doesnt work :(
+    'fileId': graph_2_id,
     'title': 'Внутрішній валовий продукт США за весь час'
 }
 box_3 = {
     'type': 'box',
     'boxType': 'plot',
-    'fileId': 'viplash4:25', #this is kastil but without it it doesnt work :(
+    'fileId': graph_3_id,
     'title': 'Динаміка зміни рейтингу м.Отога'
 }
 
@@ -127,4 +131,4 @@ py.dashboard_ops.upload(my_dboard, 'Workshop №2')
 cursor.close()
 connection.close()
 
-#todo: try to make with split and than change link
+
