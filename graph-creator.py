@@ -1,0 +1,130 @@
+import cx_Oracle
+import re
+import chart_studio
+import plotly.graph_objects as go
+import chart_studio.plotly as py
+import chart_studio.dashboard_objs as dashboard
+#----------------------------------------------------------
+chart_studio.tools.set_credentials_file(username='viplash4', api_key='xscK8HIegQU39OD2kFga')
+username = 'SYSTEM'
+password = '3poli=TEX'
+databaseName = 'localhost/xe'
+connection = cx_Oracle.connect(username,password, databaseName)
+cursor = connection.cursor()
+
+def fileId_from_url(url):
+    """Return fileId from a url."""
+    raw_fileId = re.findall("~[A-z.]+/[0-9]+", url)[0][1:]
+    return raw_fileId.replace('/', ':')
+
+# query 1 ------------------------------------------------------
+query_1 = '''SELECT
+    c1.city_name || ', ' || c1.city_state AS city_name
+    ,city_gdp
+FROM city_info c1 
+JOIN full_city_address c2
+    ON c1.city_name = c2.city_name
+WHERE c1.stat_year = 2015'''
+cursor.execute(query_1)
+names_1 = []
+values_1 = []
+for data in cursor.fetchall():
+    names_1.append(data[0])
+    values_1.append(data[1])
+print(names_1)
+print(values_1)
+# query 2 -----------------------------------------------------
+
+query_2 = '''SELECT
+    c1.city_name || ', ' || c1.city_state AS city_name
+    , SUM(c1.city_gdp) AS sum_gdp
+FROM city_info c1
+GROUP BY c1.city_name, c1.city_state'''
+cursor.execute(query_2)
+names_2 = []
+values_2 = []
+for data in cursor.fetchall():
+    names_2.append(data[0])
+    values_2.append(data[1])
+print(names_2)
+print(values_2)
+
+# query 3------------------------------------------------------
+
+query_3 = '''SELECT
+    c1.city_name || ', ' || c1.city_state AS city_name, c1.stat_year
+    , c1.city_rating
+FROM city_info c1
+WHERE c1.city_name = 'Autauga' AND c1.city_state = 'Alabama'
+ORDER BY c1.city_name'''
+cursor.execute(query_3)
+names_3 = []
+values_3 = []
+for data in cursor.fetchall():
+    names_3.append(data[2])
+    values_3.append(data[1])
+print(names_3)
+print(values_3)
+#----graph 1------------------------------------------------------------
+
+bar = go.Bar(x=names_1,
+             y=values_1
+             )
+
+
+graph_1 = py.plot([bar], auto_open= False, filename='task 1')
+print(graph_1)
+#------graph 2----------------------------------------------------------
+
+pie = go.Pie(labels=names_2,
+             values=values_2
+             )
+graph_2 = py.plot([pie], auto_open= False, filename='task 2')
+print(graph_2)
+
+#--------graph 3-------------------------------------------------------
+
+scatter = go.Scatter(
+    x = values_3,
+    y = names_3
+    )
+graph_3 = py.plot([scatter], auto_open= False, filename='task 3')
+print(graph_3)
+#dashboard creation ---------------------------------------------------
+
+
+my_dboard = dashboard.Dashboard()
+
+graph_1_id = fileId_from_url(graph_1)
+graph_2_id = fileId_from_url(graph_2)
+graph_3_id = fileId_from_url(graph_3)
+
+box_1 = {
+    'type': 'box',
+    'boxType': 'plot',
+    'fileId': 'viplash4:21', #this is kastil but without it it doesnt work :(
+    'title': 'Внутрішній валовий продукт США за 2015 рік'
+}
+box_2 = {
+    'type': 'box',
+    'boxType': 'plot',
+    'fileId': 'viplash4:23', #this is kastil but without it it doesnt work :(
+    'title': 'Внутрішній валовий продукт США за весь час'
+}
+box_3 = {
+    'type': 'box',
+    'boxType': 'plot',
+    'fileId': 'viplash4:25', #this is kastil but without it it doesnt work :(
+    'title': 'Динаміка зміни рейтингу м.Отога'
+}
+
+my_dboard.insert(box_1)
+my_dboard.insert(box_2, 'below', 1)
+my_dboard.insert(box_3, 'left', 2)
+
+py.dashboard_ops.upload(my_dboard, 'Workshop №2')
+
+cursor.close()
+connection.close()
+
+#todo: try to make with split and than change link
